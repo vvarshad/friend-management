@@ -1,8 +1,8 @@
-package com.varshad.friend.service.users;
+package com.varshad.friend.service;
 
-import com.varshad.friend.models.User;
-import com.varshad.friend.models.request.FriendRequest;
-import com.varshad.friend.models.response.FriendListResponse;
+import com.varshad.friend.model.User;
+import com.varshad.friend.model.request.FriendRequest;
+import com.varshad.friend.model.response.FriendListResponse;
 
 public interface UserService {
     CreateUserResponse createAndConnectUser(FriendRequest friendRequest);

@@ -1,49 +1,50 @@
 package com.varshad;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.varshad.friend.data.Neo4jDriver;
 import org.jooby.Jooby;
+import org.jooby.apitool.ApiTool;
+import org.jooby.json.Jackson;
+import org.jooby.neo4j.Neo4j;
+import org.neo4j.driver.v1.Driver;
 
 /**
  * @author jooby generator
  */
 public class App extends Jooby {
+    private EndPoints endPoints;
 
-  {
-     /* Config conf = require(Config.class);
-      String uri = conf.getString("db_url");
-      String user = conf.getString("db_user");
-      String password = conf.getString("db_password");
+    {
+        use(new Jackson().doWith(mapper -> {
+            mapper.setSerializationInclusion(Include.NON_ABSENT);
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        }));
 
-      use(new Jackson());
-      use(new Jdbc());
-      use(new Jdbi());*/
 
-      /*onStart(() -> {
-              Config conf = require(Config.class);
-              String uri = conf.getString("db_url");
-              String user = conf.getString("db_user");
-              String password = conf.getString("db_password");
-        System.out.println(uri + user + password);
-              Driver driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
-              try (Connection con = DriverManager.getConnection("jdbc:neo4j:"+uri, user, password)){
-                  // Querying
-                  String query = "MATCH (u:User)-[:FRIEND]-(f:User) WHERE u.name = {1} RETURN f.name, f.age";
-                  try (PreparedStatement stmt = con.prepareStatement(query)) {
-                      stmt.setString(1,"John");
+        use(new Neo4j());
 
-                      try (ResultSet rs = stmt.executeQuery()) {
-                          while (rs.next()) {
-                              System.out.println("Friend: "+rs.getString("f.name")+" is "+rs.getInt("f.age"));
-                          }
-                      }
-                  }
-              }
-            });*/
+       use(new MainModule());
 
-    get("/", () -> "Hello World!");
-  }
+        onStart(registry -> {
+            endPoints = EndPoints.getInstance();
+            Neo4jDriver.getInstance().setDriver(require(Driver.class));
+        });
 
-  public static void main(final String[] args) {
-    run(App::new, args);
-  }
+        get("/", req -> endPoints.HelloWorld(req));
+        post("/api/v1/users/connect", req -> endPoints.connectFriends(req));
+        post("/api/v1/users/friends",req -> endPoints.getFriends(req));
+        post("api/v1/users/friends/common", req -> endPoints.getCommonFriends(req));
+
+        use(new ApiTool()
+                .swagger("/swagger")
+                .raml("/raml")
+        );
+
+    }
+
+    public static void main(final String[] args) {
+        run(App::new, args);
+    }
 
 }

@@ -1,4 +1,4 @@
-package com.varshad.friend.models.response;
+package com.varshad.friend.model.response;
 
 import java.util.List;
 

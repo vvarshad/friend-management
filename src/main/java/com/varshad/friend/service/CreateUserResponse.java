@@ -1,4 +1,4 @@
-package com.varshad.friend.service.users;
+package com.varshad.friend.service;
 
 public enum CreateUserResponse {
     FRIEND_CONNECTION_SUCCESS,

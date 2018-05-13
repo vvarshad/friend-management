@@ -1,6 +1,6 @@
-package com.varshad.friend.models.request;
+package com.varshad.friend.model.request;
 
-import com.varshad.friend.models.User;
+import com.varshad.friend.model.User;
 
 import javax.validation.Valid;
 

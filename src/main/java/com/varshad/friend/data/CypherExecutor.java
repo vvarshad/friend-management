@@ -1,4 +1,8 @@
 package com.varshad.friend.data;
 
-public class CypherExecutor {
+import java.util.Iterator;
+import java.util.Map;
+
+public interface CypherExecutor {
+    Iterator<Map<String,Object>> query(String statement, Map<String,Object> params);
 }

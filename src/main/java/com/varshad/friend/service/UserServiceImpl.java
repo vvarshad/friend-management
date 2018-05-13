@@ -1,10 +1,10 @@
-package com.varshad.friend.service.users;
+package com.varshad.friend.service;
 
 import com.varshad.exceptions.InvalidParameterException;
 import com.varshad.friend.data.UserDAO;
-import com.varshad.friend.models.User;
-import com.varshad.friend.models.request.FriendRequest;
-import com.varshad.friend.models.response.FriendListResponse;
+import com.varshad.friend.model.User;
+import com.varshad.friend.model.request.FriendRequest;
+import com.varshad.friend.model.response.FriendListResponse;
 
 import javax.inject.Inject;
 import java.util.ArrayList;

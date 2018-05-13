@@ -1,4 +1,4 @@
-package com.varshad.friend.models;
+package com.varshad.friend.model;
 
 import com.varshad.exceptions.InvalidParameterException;
 

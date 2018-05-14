@@ -23,5 +23,7 @@ API Endpoints
 friend-request    : POST http://localhost:8080/api/v1/users/connect
 get-user-friends  : POST http://localhost:8080/api/v1/users/friends
 get-mutual-friends: POST http://localhost:8080/api/v1/users/friends/common
-
+subscribe-to-user : POST http://localhost:8080/api/v1/users/subscribe
+block user        : POST http://localhost:8080/api/v1/users/block
+get-receipients   : POST http://localhost:8080/api/v1/users/send-update 
 ```

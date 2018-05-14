@@ -2,8 +2,12 @@ package com.varshad;
 
 import com.varshad.friend.model.User;
 import com.varshad.friend.model.request.FriendRequest;
-import com.varshad.friend.service.CreateUserResponse;
+import com.varshad.friend.model.request.SendUpdateRequest;
+import com.varshad.friend.model.request.SubscribeBlockRequest;
+import com.varshad.friend.service.response.BlockResponse;
+import com.varshad.friend.service.response.CreateUserResponse;
 import com.varshad.friend.service.UserService;
+import com.varshad.friend.service.response.SubscriptionResponse;
 import org.jooby.Request;
 import org.jooby.Result;
 import org.jooby.Results;
@@ -34,14 +38,15 @@ public class EndPoints {
             UserService service = req.require(UserService.class);
             CreateUserResponse response = service.createAndConnectUser(friendRequest);
             switch (response){
-                case CREATE_USER_FAILED: return Results.json(new ErrorResponse(400,"Creating  and Connecting Users failed"));
+                case FRIENDS_ALREADY: return Results.json(new ErrorResponse(400,"Users are already connected as friends"));
+                case USER_BLOCKED: return Results.json(new ErrorResponse(400,"Friend request is blocked between the User"));
                 case FRIEND_CONNECTION_SUCCESS: return Results.ok(new SuccessResponse());
-                default: return Results.noContent().status(500);
             }
         }
         catch (Exception ex){
             return Results.json(new ErrorResponse(500, ex.getMessage())).status(500);
         }
+        return Results.noContent().status(500);
     }
 
     public Result getFriends(Request req){
@@ -52,6 +57,51 @@ public class EndPoints {
         }
         catch (Exception ex){
             return Results.json(new ErrorResponse(500, ex.getMessage())).status(500);
+        }
+    }
+
+    public Result subscribe(Request req){
+        try{
+            SubscribeBlockRequest request  = req.body().to(SubscribeBlockRequest.class);
+            UserService service = req.require(UserService.class);
+            SubscriptionResponse response = service.subscribe(request);
+            switch (response){
+                case SUBSCRIPTION_SUCCESS: return Results.ok(new SuccessResponse());
+                case ALREADY_SUBSCRIBED: return Results.json(new ErrorResponse(400,"requester has already subscribed to the target user")).status(400);
+                case USER_NOT_AVAILABLE: return Results.json(new ErrorResponse(400,"User not available, Please create")).status(400);
+            }
+        }
+        catch (Exception ex){
+            return Results.json(new ErrorResponse(500, ex.toString())).status(500);
+        }
+        return Results.noContent().status(500);
+    }
+
+    public Result block(Request req){
+        try{
+            SubscribeBlockRequest request  = req.body().to(SubscribeBlockRequest.class);
+            UserService service = req.require(UserService.class);
+            BlockResponse response = service.block(request);
+            switch (response) {
+                case BLOCK_SUCCESS: return Results.ok(new SuccessResponse());
+                case ALREADY_BLOCKED: return Results.json(new ErrorResponse(400, "requester has already blocked to the target user")).status(400);
+                case USER_NOT_AVAILABLE: return Results.json(new ErrorResponse(400, "User not available, Please create")).status(400);
+            }
+        }
+        catch (Exception ex){
+            return Results.json(new ErrorResponse(500, ex.toString())).status(500);
+        }
+        return Results.noContent().status(500);
+    }
+
+    public Result updateReceipients(Request req){
+        try{
+            SendUpdateRequest request  = req.body().to(SendUpdateRequest.class);
+            UserService service = req.require(UserService.class);
+            return Results.ok(service.getReceipients(request));
+        }
+        catch (Exception ex){
+            return Results.json(new ErrorResponse(500, ex.toString())).status(500);
         }
     }
 

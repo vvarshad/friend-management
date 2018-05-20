@@ -7,12 +7,15 @@ import org.jooby.Jooby;
 import org.jooby.json.Jackson;
 import org.jooby.neo4j.Neo4j;
 import org.neo4j.driver.v1.Driver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author jooby generator
  */
 public class App extends Jooby {
     private EndPoints endPoints;
+    private Logger logger = LoggerFactory.getLogger(App.class);
 
     {
         use(new Jackson().doWith(mapper -> {
@@ -25,6 +28,16 @@ public class App extends Jooby {
             endPoints = EndPoints.getInstance();
             Neo4jDriver.getInstance().setDriver(require(Driver.class));
         });
+        before("/api/**", (req, rsp) -> {
+            logger.trace("API request headers: " + req.headers());
+            logger.trace("API request: " + req.ip() + " " + req.method() + " " + req.path() + " " + req.queryString());
+        });
+        after("/api/**", (req, rsp, result) -> {
+            logger.trace("API response headers: "+ result.headers());
+            logger.trace("API response: "+ result.status()+" "+ result.get());
+            return result;
+        });
+        complete("/api/**", (req, rsp, cause) -> logger.warn("API error:" + cause.toString()));
 
         post("/api/v1/users/connect", req -> endPoints.connectFriends(req));
         post("/api/v1/users/friends", req -> endPoints.getFriends(req));

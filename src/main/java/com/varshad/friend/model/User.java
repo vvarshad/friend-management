@@ -1,9 +1,11 @@
 package com.varshad.friend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.varshad.exceptions.InvalidParameterException;
 
 import javax.validation.constraints.Pattern;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
 
     @Pattern(regexp = ".+@.+")
@@ -15,7 +17,7 @@ public class User {
         if(email.matches(".+@.+")) {
             this.email = email;
         }
-        else throw new InvalidParameterException("User is not in valid format");
+        else throw new InvalidParameterException("User mail is not in valid format");
     }
 
     public String getEmail() {

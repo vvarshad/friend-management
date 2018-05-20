@@ -1,22 +1,26 @@
 package com.varshad;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.varshad.friend.model.User;
 import com.varshad.friend.model.request.FriendRequest;
 import com.varshad.friend.model.request.SendUpdateRequest;
 import com.varshad.friend.model.request.SubscribeBlockRequest;
+import com.varshad.friend.service.UserService;
 import com.varshad.friend.service.response.BlockResponse;
 import com.varshad.friend.service.response.CreateUserResponse;
-import com.varshad.friend.service.UserService;
 import com.varshad.friend.service.response.SubscriptionResponse;
 import org.jooby.Request;
 import org.jooby.Result;
 import org.jooby.Results;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
 
 @Singleton
 public class EndPoints {
     private static EndPoints instance;
+    private Logger logger = LoggerFactory.getLogger(EndPoints.class);
 
     private EndPoints() {
     }
@@ -44,7 +48,12 @@ public class EndPoints {
             }
         }
         catch (Exception ex){
-            return Results.json(new ErrorResponse(500, ex.getMessage())).status(500);
+            logger.error(ex.getLocalizedMessage());
+            if(ex.getCause().getClass() == JsonMappingException.class){
+                return Results.json(new ErrorResponse(400, ex.getCause().getCause().getMessage())).status(400);
+            }else {
+                return Results.json(new ErrorResponse(500, ex.getMessage())).status(500);
+            }
         }
         return Results.noContent().status(500);
     }
@@ -56,6 +65,7 @@ public class EndPoints {
             return Results.ok(service.getFriends(user));
         }
         catch (Exception ex){
+            logger.error(ex.getLocalizedMessage());
             return Results.json(new ErrorResponse(500, ex.getMessage())).status(500);
         }
     }
@@ -72,6 +82,7 @@ public class EndPoints {
             }
         }
         catch (Exception ex){
+            logger.error(ex.getLocalizedMessage());
             return Results.json(new ErrorResponse(500, ex.toString())).status(500);
         }
         return Results.noContent().status(500);
@@ -89,6 +100,7 @@ public class EndPoints {
             }
         }
         catch (Exception ex){
+            logger.error(ex.getLocalizedMessage());
             return Results.json(new ErrorResponse(500, ex.toString())).status(500);
         }
         return Results.noContent().status(500);
@@ -101,6 +113,7 @@ public class EndPoints {
             return Results.ok(service.getReceipients(request));
         }
         catch (Exception ex){
+            logger.error(ex.getLocalizedMessage());
             return Results.json(new ErrorResponse(500, ex.toString())).status(500);
         }
     }
@@ -112,6 +125,7 @@ public class EndPoints {
             return Results.ok(service.getCommonFriends(friendRequest));
         }
         catch (Exception ex){
+            logger.error(ex.getLocalizedMessage());
             return Results.json(new ErrorResponse(500, ex.toString())).status(500);
         }
     }

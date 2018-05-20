@@ -1,4 +1,4 @@
-# friend-management
+## friend-management
 Java API Application to manage friends. 
 Framework: Jooby. 
 Database: Neo4j.
@@ -9,9 +9,21 @@ To start the required services and run the application, execute the following co
 docker-compose up -d
 ./gradlew joobyRun
 ```
-To stop and delete the services
+
+To run test cases
+```
+./gradlew check
+```
+To stop and delete the database 
 ```
 docker-compose down -v
+```
+
+Api Documentation
+```
+Swagger Documentation link:
+http://localhost:8080/swagger
+
 ```
 To log in to the Neo4j DB Console
 ```

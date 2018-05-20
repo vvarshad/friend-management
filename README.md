@@ -10,6 +10,8 @@ docker-compose up -d
 ./gradlew joobyRun
 ```
 
+`Note: Ports 8080, 7687, 7474 has to be free before running the above commands`
+
 To run test cases
 ```
 ./gradlew check
@@ -28,6 +30,11 @@ http://localhost:8080/swagger
 To log in to the Neo4j DB Console
 ```
 docker exec --interactive --tty <CONTAINER_ID> bin/cypher-shell
+```
+
+To log in to Neo4j Browser UI
+```
+http://localhost:7474/browser/
 ```
 
 API Endpoints

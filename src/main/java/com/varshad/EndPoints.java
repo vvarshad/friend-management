@@ -1,6 +1,7 @@
 package com.varshad;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.exc.InvalidDefinitionException;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.varshad.friend.model.User;
 import com.varshad.friend.model.request.FriendRequest;
@@ -123,11 +124,13 @@ public class EndPoints {
 
     private Result handleApiExceptions(Exception ex) {
         logger.error(ex.getLocalizedMessage());
-        if(ex.getCause().getClass() == JsonMappingException.class){
+        if(ex.getCause().getClass() == JsonMappingException.class ||
+                ex.getCause().getClass() == InvalidDefinitionException.class){
             return Results.json(new ErrorResponse(400, ex.getCause().getCause().getMessage())).status(400);
         }else if(ex.getCause().getClass() == MismatchedInputException.class){
             return Results.json(new ErrorResponse(400, "Invalid body format for API endpoint. Please check the Json body of the request")).status(400);
         }else {
+            ex.printStackTrace();
             return Results.json(new ErrorResponse(500, ex.getMessage())).status(500);
         }
     }

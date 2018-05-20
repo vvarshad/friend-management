@@ -1,0 +1,251 @@
+swagger: '2.0'
+info:
+  description: Friend Management API Docs
+  version: 1.0.0
+  title: Friend Management
+  contact:
+    email: vvarshad@hotmail.com
+basePath: /api
+consumes:
+  - application/json
+produces:
+  - application/json
+
+tags:
+  - name: Friends
+    description: Connect users, get friends, get common-friends
+  - name: Subscription & Blocking
+    description: Subscribe to / block users
+  - name: Updates
+    description: get receipient list of the update to be sent
+
+
+paths:
+  /v1/users/connect:
+    post:
+      tags:
+        - Friends
+      summary: Registers users if not exists and connect them as friends
+      description: ''
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/FriendRequest'
+      responses:
+        '200':
+          description: Users connected as friends [User(s) are created if not exists]
+          schema:
+            $ref: '#/definitions/SuccessResponse'
+        '400':
+          description: Validation failed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+  /v1/users/friends:
+    post:
+      tags:
+       - Friends
+      summary: returns the friend list of the user
+      description: ''
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        '200':
+          description: list of friends of the user
+          schema:
+            $ref: '#/definitions/FriendListResponse'
+        '400':
+          description: Validation Failed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+
+  /v1/users/friends/common:
+    post:
+      tags:
+       - Friends
+      summary: returns the mutual friends list of the users
+      description: ''
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/FriendRequest'
+      responses:
+        '200':
+          description: list of friends of the user
+          schema:
+            $ref: '#/definitions/FriendListResponse'
+        '400':
+          description: Validation Failed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+  /v1/users/subscribe:
+    post:
+      tags:
+        - Subscription & Blocking
+      summary: subscribe to the target user
+      description: ''
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/SubscribeBlockRequest'
+      responses:
+        '200':
+          description: requestor is now subscribed to the target user
+          schema:
+            $ref: '#/definitions/SuccessResponse'
+        '400':
+          description: Validation failed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+  /v1/users/block:
+    post:
+      tags:
+        - Subscription & Blocking
+      summary: block the target user
+      description: ''
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/SubscribeBlockRequest'
+      responses:
+        '200':
+          description: requestor has blocked the target user
+          schema:
+            $ref: '#/definitions/SuccessResponse'
+        '400':
+          description: Validation failed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+  /v1/users/send-update:
+    post:
+      tags:
+        - Updates
+      summary: get recipient list for the update to be sent
+      description: ''
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/SendUpdateRequest'
+      responses:
+        '200':
+          description: List of users who will receive the update
+          schema:
+            $ref: '#/definitions/UpdateReceipientResponse'
+        '400':
+          description: Validation failed
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+definitions:
+  User:
+    type: object
+    required:
+      - email
+    properties:
+      email:
+        type: string
+        example: 'mickey@mouse.com'
+
+  FriendRequest:
+    type: object
+    required:
+      - friends
+    properties:
+      friends:
+        type: array
+        items:
+          type: string
+          example: ["mickey@mouse.com","minnie@mouse.com"]
+
+  SubscribeBlockRequest:
+    type: object
+    required:
+      - requestor
+      - target
+    properties:
+      requestor:
+        type: string
+        example: "mickey@mouse.com"
+      target:
+        type: string
+        example: "minnie@mouse.com"
+
+  SendUpdateRequest:
+    type: object
+    required:
+      - sender
+      - text
+    properties:
+      sender:
+        type: string
+        example: "mickey@mouse.com"
+      text:
+        type: string
+        example: "Hi minnie@mouse.com, can we go out for dinner tonight?"
+
+  SuccessResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+        example: true
+
+  ErrorResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+        example: false
+      status:
+        type: number
+        example: 400
+      message:
+        type: string
+        example: Invalid Parameters
+        description: 'Error message stating the reason of request getting failed'
+
+  FriendListResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+        example: true
+      friends:
+        type: array
+        items:
+          type: string
+          example: ["mickey@mouse.com","minnie@mouse.com"]
+      count:
+        type: number
+        example:  2
+        description: 'total number of friends'
+
+  UpdateReceipientResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+        example: true
+      recipients:
+        type: array
+        items:
+          type: string
+          example: ["minnie@mouse.com"]

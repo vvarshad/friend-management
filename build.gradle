@@ -42,6 +42,7 @@ dependencies {
     compile group: 'org.jooby', name: 'jooby-jdbc',version: '1.3.0'
     compile group: 'org.jooby', name: 'jooby-jdbi',version: '1.3.0'
     compile group: 'org.jdbi', name: 'jdbi3-core', version: '3.2.0'
+    compile 'org.webjars:swagger-ui:3.0.19'
     compile group: 'org.mindrot', name: 'jbcrypt', version:'0.4'
     testCompile group: 'org.mockito', name: 'mockito-all', version: '1.8.4'
     compile group: 'com.squareup.retrofit2', name: 'retrofit', version:'2.2.0'
@@ -61,5 +62,33 @@ dependencies {
 }
 
 sourceSets.main.resources {
-    srcDirs = ["conf", "public"]
+    srcDirs = ["conf", "public", "src/main/resources", "build/swagger"]
+}
+
+
+
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
+
+task convertSwaggerYAML2JSON(type: ConvertSwaggerYAML2JSONTask)
+processResources.dependsOn convertSwaggerYAML2JSON
+
+@SuppressWarnings("GrMethodMayBeStatic")
+class ConvertSwaggerYAML2JSONTask extends DefaultTask {
+
+    @InputFile
+    File sourceYAML = new File('src/main/resources/swagger/swagger.yaml')
+
+    @OutputFile
+    File destinationJSON = new File('build/swagger/swagger.json')
+
+    @TaskAction
+    def convert() {
+        def yamlReader = new ObjectMapper(new YAMLFactory())
+        Object obj = yamlReader.readValue(sourceYAML, Object.class)
+        ObjectMapper jsonWriter = new ObjectMapper()
+        jsonWriter.enable(SerializationFeature.INDENT_OUTPUT)
+        jsonWriter.writeValue(destinationJSON, obj)
+    }
 }

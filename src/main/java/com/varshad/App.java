@@ -37,7 +37,7 @@ public class App extends Jooby {
             logger.trace("API response: "+ result.status()+" "+ result.get());
             return result;
         });
-        complete("/api/**", (req, rsp, cause) -> logger.warn("API error:" + cause.toString()));
+        complete("/api/**", (req, rsp, cause) -> logger.warn("API error:" + cause));
 
         post("/api/v1/users/connect", req -> endPoints.connectFriends(req));
         post("/api/v1/users/friends", req -> endPoints.getFriends(req));

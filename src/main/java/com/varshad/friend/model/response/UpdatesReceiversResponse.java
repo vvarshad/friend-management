@@ -30,4 +30,12 @@ public class UpdatesReceiversResponse {
     public void setReceipients(List<String> receipients) {
         this.receipients = receipients;
     }
+
+    @Override
+    public String toString() {
+        return "UpdatesReceiversResponse{" +
+                "success=" + success +
+                ", receipients=" + receipients +
+                '}';
+    }
 }

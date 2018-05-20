@@ -41,4 +41,12 @@ public class FriendListResponse {
         this.success = success;
     }
 
+    @Override
+    public String toString() {
+        return "FriendListResponse{" +
+                "success=" + success +
+                ", friends=" + friends +
+                ", count=" + count +
+                '}';
+    }
 }

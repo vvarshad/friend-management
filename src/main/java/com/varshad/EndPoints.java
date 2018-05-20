@@ -1,6 +1,7 @@
 package com.varshad;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.varshad.friend.model.User;
 import com.varshad.friend.model.request.FriendRequest;
 import com.varshad.friend.model.request.SendUpdateRequest;
@@ -48,12 +49,7 @@ public class EndPoints {
             }
         }
         catch (Exception ex){
-            logger.error(ex.getLocalizedMessage());
-            if(ex.getCause().getClass() == JsonMappingException.class){
-                return Results.json(new ErrorResponse(400, ex.getCause().getCause().getMessage())).status(400);
-            }else {
-                return Results.json(new ErrorResponse(500, ex.getMessage())).status(500);
-            }
+            return handleApiExceptions(ex);
         }
         return Results.noContent().status(500);
     }
@@ -65,8 +61,7 @@ public class EndPoints {
             return Results.ok(service.getFriends(user));
         }
         catch (Exception ex){
-            logger.error(ex.getLocalizedMessage());
-            return Results.json(new ErrorResponse(500, ex.getMessage())).status(500);
+            return handleApiExceptions(ex);
         }
     }
 
@@ -82,8 +77,7 @@ public class EndPoints {
             }
         }
         catch (Exception ex){
-            logger.error(ex.getLocalizedMessage());
-            return Results.json(new ErrorResponse(500, ex.toString())).status(500);
+            return handleApiExceptions(ex);
         }
         return Results.noContent().status(500);
     }
@@ -100,8 +94,7 @@ public class EndPoints {
             }
         }
         catch (Exception ex){
-            logger.error(ex.getLocalizedMessage());
-            return Results.json(new ErrorResponse(500, ex.toString())).status(500);
+            return handleApiExceptions(ex);
         }
         return Results.noContent().status(500);
     }
@@ -113,8 +106,7 @@ public class EndPoints {
             return Results.ok(service.getReceipients(request));
         }
         catch (Exception ex){
-            logger.error(ex.getLocalizedMessage());
-            return Results.json(new ErrorResponse(500, ex.toString())).status(500);
+            return handleApiExceptions(ex);
         }
     }
 
@@ -125,8 +117,18 @@ public class EndPoints {
             return Results.ok(service.getCommonFriends(friendRequest));
         }
         catch (Exception ex){
-            logger.error(ex.getLocalizedMessage());
-            return Results.json(new ErrorResponse(500, ex.toString())).status(500);
+            return handleApiExceptions(ex);
+        }
+    }
+
+    private Result handleApiExceptions(Exception ex) {
+        logger.error(ex.getLocalizedMessage());
+        if(ex.getCause().getClass() == JsonMappingException.class){
+            return Results.json(new ErrorResponse(400, ex.getCause().getCause().getMessage())).status(400);
+        }else if(ex.getCause().getClass() == MismatchedInputException.class){
+            return Results.json(new ErrorResponse(400, "Invalid body format for API endpoint. Please check the Json body of the request")).status(400);
+        }else {
+            return Results.json(new ErrorResponse(500, ex.getMessage())).status(500);
         }
     }
 }
@@ -140,6 +142,13 @@ class SuccessResponse{
 
     public void setSuccess(Boolean success) {
         this.success = success;
+    }
+
+    @Override
+    public String toString() {
+        return "SuccessResponse{" +
+                "success=" + success +
+                '}';
     }
 }
 
@@ -176,5 +185,14 @@ class ErrorResponse{
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    @Override
+    public String toString() {
+        return "ErrorResponse{" +
+                "success=" + success +
+                ", status=" + status +
+                ", message='" + message + '\'' +
+                '}';
     }
 }
